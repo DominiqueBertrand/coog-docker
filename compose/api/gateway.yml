@@ -1,8 +1,6 @@
 services:
   gateway:
     image: ${IMAGE_REGISTRY:?}/${IMAGE_NAME_GATEWAY:?}:${IMAGE_VERSION_GATEWAY:?}
-    depends_on:
-      - mongo
     env_file:
       - env/gateway.env
     environment:
@@ -23,7 +21,6 @@ services:
       - COOG_GATEWAY_PORT=${COOG_GATEWAY_PORT:-3000}
 
       - WHITELIST=${CORS_WHITELIST:?}
-      - COOG_WEB_TOKEN=${COOG_GATEWAY_TOKEN:?}
 
       - GOOGLE_MODULE=${ENABLE_GOOGLE_AUTHENTICATION:?}
       - COOG_MODULE=${ENABLE_COOG_AUTHENTICATION:?}
@@ -33,16 +30,23 @@ services:
       - JWT_EXPIRATION=${JWT_EXPIRATION:?}
       - JWT_INTERNAL_ENCRYPTION=${JWT_INTERNAL_ENCRYPTION:?}
 
-      - MONGO_HOST=${MONGO_HOST:?}
-      - MONGO_PORT=${MONGO_PORT:?}
-      - MONGO_USER=${MONGO_USER:?}
-      - MONGO_PASSWORD=${MONGO_PASSWORD:?}
-      - MONGODB_URI=${MONGODB_URI:?}
-
       - OPENTELEMETRY_ENABLED=${OPEN_TELEMETRY_TRACING_ENABLED:?}
       - OPENTELEMETRY_URL=${OPEN_TELEMETRY_TRACING_URL:-}
       - OPENTELEMETRY_TOKEN=${OPEN_TELEMETRY_TRACING_TOKEN:-}
       - OPENTELEMETRY_SERVICE_NAME=${OPEN_TELEMETRY_SERVICE_NAME_GATEWAY:?}
+
+      - POSTGRESQL_URL=${POSTGRESQL_CONNECTION_STRING:?}
+      - PGSSL=0
+
+      - ENABLE_WINDOW_RATE_LIMIT=true
+      - ENABLE_PERIODIC_RATE_LIMIT=true
+
+      - COOG_MODULE=true
+      - COOG_TOKEN_MODULE=true
+      - ENABLE_API_KEY_AUTH=true
+
+      - HAS_EXTERNAL_V3_SPEC=true
+      - COOG_DEBUG_SERVER=true
     labels:
       - traefik.enable=true
       - traefik.http.routers.gateway.rule=Host(`${PROJECT_HOSTNAME:?}`) && PathPrefix(`/gateway`)

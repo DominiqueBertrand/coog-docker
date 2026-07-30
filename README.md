@@ -152,9 +152,6 @@ FILESYSTEM_ROOT=/coog
 # Encryption key used for generating jwt token for API communication
 JWT_ENCRYPTION=change_me
 
-# Token used for communication between API services and the backoffice
-COOG_GATEWAY_TOKEN=api_token_for_api_user
-
 # Not necessary to modify (defaults to "coog"), but usually will be
 COMPOSE_PROJECT_NAME=demo
 ```
@@ -162,6 +159,14 @@ COMPOSE_PROJECT_NAME=demo
 *Note for developers: when using multiple environments, `FILESYSTEM_ROOT` can
 be set directly in a `.bashrc` or a `.envrc` file so it is not necessary to
 re-define it in every environment*
+
+Gateway-to-Coog administrative calls use short-lived bearer JWTs signed with
+`JWT_INTERNAL_ENCRYPTION` (derived from `JWT_ENCRYPTION`). By default the
+project runs in SaaS mode (`CUSTOM_ENABLE_SAAS_MODE` defaults to `true`):
+request rate limiting is disabled and `COOG_WEB_TOKEN` is left unset, since
+rate limiting requires that static token to function. To use the legacy
+static-token auth with rate limiting enabled, set
+`CUSTOM_ENABLE_SAAS_MODE=false` and provide `CUSTOM_COOG_GATEWAY_TOKEN`.
 
 ### Disabling services
 

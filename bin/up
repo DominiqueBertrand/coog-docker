@@ -19,6 +19,13 @@ DB_USER=$(source "${BASE_PATH}/.env" && echo "${POSTGRES_USER}")
 DB_NAME=$(source "${BASE_PATH}/.env" && echo "${COOG_DATABASES}")
 DB_HOST=$(source "${BASE_PATH}/.env" && echo "${POSTGRES_HOST}")
 DB_PORT=$(source "${BASE_PATH}/.env" && echo "${POSTGRES_PORT}")
+DB_PASS=$(source "${BASE_PATH}/.env" && echo "${POSTGRES_PASSWORD}")
+
+# host.docker.internal is for containers; use localhost when calling host psql
+DB_HOST_LOCAL="${DB_HOST}"
+if [[ "${DB_HOST_LOCAL}" == "host.docker.internal" ]]; then
+  DB_HOST_LOCAL="127.0.0.1"
+fi
 
 sleep 2
 
@@ -32,7 +39,7 @@ do
       ${DOCKER_COMMAND} exec -T -- postgres \
         psql -U "${DB_USER}" -d "${DATABASE}" -c "CREATE EXTENSION IF NOT EXISTS ${EXTENTION};" > /dev/null
     else
-      psql -U "${DB_USER}" -h "${DB_HOST}" -p "${DB_PORT}" -d "${DATABASE}" -c "CREATE EXTENSION IF NOT EXISTS ${EXTENTION};" > /dev/null
+      PGPASSWORD="${DB_PASS}" psql -U "${DB_USER}" -h "${DB_HOST_LOCAL}" -p "${DB_PORT}" -d "${DATABASE}" -c "CREATE EXTENSION IF NOT EXISTS ${EXTENTION};" > /dev/null
     fi
   done
   echo " "

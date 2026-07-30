@@ -1,0 +1,6 @@
+--2026-04-22 18:15:10--  http://localhost:3001/coog/coog/
+Resolving localhost (localhost)... 127.0.0.1
+Connecting to localhost (localhost)|127.0.0.1|:3001... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+

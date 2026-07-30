@@ -24,5 +24,18 @@ docker-compose.logging.yaml
 # Auto-generated for integrated postgres configuration
 docker-compose.postgres.yaml
 
+# Auto-generated for legacy static-token gateway auth (ENABLE_SAAS_MODE=false)
+docker-compose.saas-mode.yaml
+
 # Contains custom services
 /compose/custom
+coog/
+*.sql
+*.zip
+coog-timesheet/*
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads

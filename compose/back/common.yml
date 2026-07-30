@@ -30,6 +30,8 @@ services:
       - TRYTOND_ACCOUNT_PAYMENT_SEPA__FILESTORE=true
       - TRYTOND_ACCOUNT_PAYMENT_SEPA__STORE_PREFIX=sepa_message
       - TRYTOND_GATEWAY__URL=${API_GATEWAY_INTERNAL_URL}
+      - MONGODB_MIGRATION_URI=${MONGODB_URI:?}
+      - TRYTOND_API__MAGIC_LINK_SECRET=${MAGIC_LINK_SECRET:-JWT_ENCRYPTION}
     volumes:
       # Do not enable this unless it does not trigger warnings when starting
       # the server up :)

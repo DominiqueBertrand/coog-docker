@@ -6,6 +6,9 @@ services:
     environment:
       - JWT_EXPIRATION=${JWT_EXPIRATION:?}
       - JWT_INTERNAL_ENCRYPTION=${JWT_INTERNAL_ENCRYPTION:?}
+      - SKIP_PREFLIGHT_CHECK=true
+      - REACT_APP_PROD_API_URL=http://localhost:6791
+      - REACT_APP_BASE_NAME=
     depends_on:
       - mongo
       - api
