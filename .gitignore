@@ -39,3 +39,4 @@ coog-timesheet/*
 *.db
 .beads-credential-key
 .beads
+compose/back/coog-timesheet/coog_data/
