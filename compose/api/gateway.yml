@@ -50,6 +50,8 @@ services:
       - COOG_DEBUG_SERVER=true
     labels:
       - traefik.enable=true
+      # Use the network shared with the proxy, even with extra service networks.
+      - traefik.docker.network=${NETWORK_FRONTEND_NAME:?}
       - traefik.http.routers.gateway.rule=Host(`${PROJECT_HOSTNAME:?}`) && PathPrefix(`/gateway`)
       - traefik.http.routers.gateway.entrypoints=http
       - traefik.http.routers.gateway.middlewares=gateway

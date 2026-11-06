@@ -439,6 +439,57 @@ To do so, you must:
 *Note: This can be done for other services, however the typical use case will
 be for backend developers, hence this particular example*
 
+### Timesheet returns `404 page not found` after a Docker upgrade
+
+If `http://coog-timesheet.localhost/` returns Traefik's plain-text 404 while
+`coog` is healthy, check service discovery:
+
+```shell
+docker compose logs --tail 50 reverse-proxy
+curl -s http://localhost:8080/api/http/routers
+```
+
+Traefik 3.4.0 uses Docker API 1.24, which Docker Engine 29 rejects. The proxy
+then logs `Failed to retrieve information of the docker client and server host`
+and registers no application routes. This stack pins `traefik:v3.7.17`, which
+supports Docker API negotiation. See the
+[Traefik Docker provider migration notes](https://doc.traefik.io/traefik/v3.7/migrate/v3/#docker-provider-minimum-docker-engine-version).
+
+Apply the proxy update without restarting application or database services:
+
+```shell
+docker compose pull reverse-proxy
+docker compose up -d --no-deps reverse-proxy
+curl -I http://coog-timesheet.localhost/
+```
+
+The root page should return HTTP 200 and the dashboard API should include
+`coog@docker`. Keep this image pin when regenerating `.env`; changing the
+hostname or restarting Coog does not resolve the Docker API incompatibility.
+
+### Gateway returns HTTP 504
+
+The local gateway also joins `shared-network`, which the reverse proxy does
+not join. Without an explicit network, Traefik can select that unreachable
+address even though the gateway answers on its frontend and backend addresses.
+The gateway service therefore sets
+`traefik.docker.network=${NETWORK_FRONTEND_NAME:?}` in
+`compose/api/gateway.yml`, inherited by the custom gateway configuration.
+See [Traefik's network selection documentation](https://doc.traefik.io/traefik/reference/routing-configuration/other-providers/docker/#specific-provider-options).
+
+Apply a gateway label change and verify the browser redirect:
+
+```shell
+docker compose up -d --no-deps gateway
+curl -sS -L -o /dev/null -w '%{http_code}\n' --max-time 10 \
+  http://coog-timesheet.localhost/gateway/
+```
+
+The gateway root redirects to `/gateway/docs/apis`, which should return HTTP
+200. The proxy service details at
+`http://localhost:8080/api/http/services/gateway-coog-timesheet@docker` should
+show the gateway's frontend address, rather than its `shared-network` address.
+
 ### Network error on configuration
 
 The following error may happen if you work with multiple projects on the same
